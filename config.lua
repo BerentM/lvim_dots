@@ -62,17 +62,16 @@ lvim.builtin.which_key.mappings["P"] = {
   e = { "<cmd>lua require('swenv.api').pick_venv()<cr>", "Pick Env" },
   s = { "<cmd>lua require('swenv.api').get_current_venv()<cr>", "Show Env" },
   i = { ":!isort % --profile=black<cr>", "Sort Imports" },
+  n = { "<cmd>lua require('neogen').generate()<cr>", "Generate function docstring" },
 }
 
--- lvim.builtin.which_key.mappings["t"] = {
---   name = "+Trouble",
---   r = { "<cmd>Trouble lsp_references<cr>", "References" },
---   f = { "<cmd>Trouble lsp_definitions<cr>", "Definitions" },
---   d = { "<cmd>Trouble document_diagnostics<cr>", "Diagnostics" },
---   q = { "<cmd>Trouble quickfix<cr>", "QuickFix" },
---   l = { "<cmd>Trouble loclist<cr>", "LocationList" },
---   w = { "<cmd>Trouble workspace_diagnostics<cr>", "Workspace Diagnostics" },
--- }
+lvim.builtin.which_key.mappings["n"] = {
+  name = "Neogen",
+  n = { "<cmd>lua require('neogen').generate()<cr>", "Generate function docstring" },
+  c = { "<cmd>lua require('neogen').generate({type = 'class'})<cr>", "Generate class docstring" },
+  f = { "<cmd>lua require('neogen').generate({type = 'file'})<cr>", "Generate file docstring" },
+  t = { "<cmd>lua require('neogen').generate({type = 'type'})<cr>", "Generate type docstring" },
+}
 
 -- TODO: User Config for predefined plugins
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
@@ -145,8 +144,8 @@ lvim.builtin.treesitter.highlight.enable = true
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
+  { command = "isort", filetypes = { "python" } },
   { command = "black", filetypes = { "python" } },
-  -- { command = "isort", filetypes = { "python" } },
   {
     -- each formatter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
     command = "prettier",
@@ -162,6 +161,7 @@ formatters.setup {
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
   { command = "mypy", filetypes = { "python" } },
+  { command = "pydocstyle", filetypes = { "python" } },
   {
     -- each linter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
     command = "shellcheck",
@@ -178,10 +178,6 @@ linters.setup {
 
 -- Additional Plugins
 lvim.plugins = {
-  -- {
-  --   "folke/trouble.nvim",
-  --   cmd = "TroubleToggle",
-  -- },
   {
     "ggandor/lightspeed.nvim",
     event = "BufRead",

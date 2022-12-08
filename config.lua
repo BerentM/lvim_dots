@@ -73,6 +73,10 @@ lvim.builtin.which_key.mappings["n"] = {
   t = { "<cmd>lua require('neogen').generate({type = 'type'})<cr>", "Generate type docstring" },
 }
 
+lvim.builtin.which_key.mappings["D"] = {
+  name = "Docker",
+  D = { "<cmd>lua require('user.lazydocker').lazydocker_toggle()<cr>", "Lazydocker" },
+}
 -- TODO: User Config for predefined plugins
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.alpha.active = true

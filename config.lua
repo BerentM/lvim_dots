@@ -81,15 +81,16 @@ lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
 lvim.builtin.treesitter.ensure_installed = {
   "bash",
   "c",
+  "css",
+  "dart",
+  "java",
   "javascript",
   "json",
   "lua",
   "python",
-  "typescript",
-  "tsx",
-  "css",
   "rust",
-  "java",
+  "tsx",
+  "typescript",
   "yaml",
 }
 
@@ -100,9 +101,9 @@ lvim.builtin.treesitter.highlight.enable = true
 
 -- make sure server will always be installed even if the server is in skipped_servers list
 lvim.lsp.installer.setup.ensure_installed = {
-  "sumeko_lua",
   "jsonls",
   "pyright",
+  "sumeko_lua",
 }
 
 require 'lspconfig'.dartls.setup {}

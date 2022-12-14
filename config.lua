@@ -104,6 +104,8 @@ lvim.lsp.installer.setup.ensure_installed = {
   "jsonls",
   "pyright",
 }
+
+require 'lspconfig'.dartls.setup {}
 -- -- change UI setting of `LspInstallInfo`
 -- -- see <https://github.com/williamboman/nvim-lsp-installer#default-configuration>
 -- lvim.lsp.installer.setup.ui.check_outdated_servers_on_open = false
@@ -141,7 +143,7 @@ lvim.lsp.installer.setup.ensure_installed = {
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
-  { command = "isort", filetypes = { "python" }, extra_args = {"--profile=black"}},
+  { command = "isort", filetypes = { "python" }, extra_args = { "--profile=black" } },
   { command = "black", filetypes = { "python" } },
 }
 
@@ -171,6 +173,8 @@ lvim.plugins = {
 
   "AckslD/swenv.nvim",
   "mfussenegger/nvim-dap-python",
+  "jbyuki/one-small-step-for-vimkind",
+
   {
     -- You can generate docstrings automatically.
     "danymat/neogen",
@@ -230,6 +234,40 @@ pcall(function() require("dap-python").setup(mason_path .. "packages/debugpy/ven
 -- tries to detect the runner by probing for pytest.ini and manage.py, if
 -- neither are present it defaults to unittest.
 pcall(function() require("dap-python").test_runner = "pytest" end)
+
+-- Setup dap for lua - works for debugging plugs
+local dap = require "dap"
+dap.configurations.lua = {
+  {
+    type = 'nlua',
+    request = 'attach',
+    name = "Attach to running Neovim instance",
+  }
+}
+
+dap.adapters.nlua = function(callback, config)
+  callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
+end
+
+-- Setup dap for dart
+dap.adapters.dart = {
+  type = "executable",
+  command = "dart",
+  -- This command was introduced upstream in https://github.com/dart-lang/sdk/commit/b68ccc9a
+  args = { "debug_adapter" }
+}
+dap.configurations.dart = {
+  {
+    type = "dart",
+    request = "launch",
+    name = "Launch Dart Program",
+    -- The nvim-dap plugin populates this variable with the filename of the current buffer
+    program = "${file}",
+    -- The nvim-dap plugin populates this variable with the editor's current working directory
+    cwd = "${workspaceFolder}",
+    args = { "--help" }, -- Note for Dart apps this is args, for Flutter apps toolArgs
+  }
+}
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
 vim.api.nvim_create_autocmd("BufEnter", {

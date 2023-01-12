@@ -1,3 +1,6 @@
+-- REQUREMENTS
+-- GO:
+-- MasonInstall gopls golangci-lint-langserver delve goimports gofumpt gomodifytags gotests impl
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = true

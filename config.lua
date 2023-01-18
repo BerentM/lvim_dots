@@ -171,6 +171,7 @@ local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
   { command = "mypy", filetypes = { "python" } },
   { command = "pydocstyle", filetypes = { "python" } },
+  { command = "revive", filetypes = { "go" } },
   {
     -- each linter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
     command = "shellcheck",
@@ -193,6 +194,9 @@ lvim.plugins = {
   "AckslD/swenv.nvim",
   "mfussenegger/nvim-dap-python",
   "jbyuki/one-small-step-for-vimkind",
+
+  -- flutter
+  "akinsho/flutter-tools.nvim",
 
   -- go
   "olexsmir/gopher.nvim",

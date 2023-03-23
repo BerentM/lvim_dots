@@ -43,6 +43,10 @@ lvim.builtin.which_key.vmappings["d"] = {
   name = "Debug",
   s = { "<cmd>lua require('dap-python').debug_selection()<cr>", "Debug Selection" },
 }
+lvim.builtin.which_key.mappings["r"] = {
+  name = "Flutter",
+  r = { "<cmd>Telescope flutter commands<cr>", "Flutter Commands" },
+}
 
 lvim.builtin.which_key.mappings["P"] = {
   name = "Python",
@@ -160,18 +164,18 @@ lsp_manager.setup("gopls", {
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
-  -- { command = "isort", filetypes = { "python" }, extra_args = { "--profile=black" } },
-  -- { command = "black", filetypes = { "python" } },
+  { command = "isort",     filetypes = { "python" }, extra_args = { "--profile=black" } },
+  { command = "black",     filetypes = { "python" } },
   { command = "goimports", filetypes = { "go" } },
-  { command = "gofumpt", filetypes = { "go" } },
+  { command = "gofumpt",   filetypes = { "go" } },
 }
 
 -- -- set additional linters
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
-  { command = "mypy", filetypes = { "python" } },
+  { command = "mypy",       filetypes = { "python" } },
   { command = "pydocstyle", filetypes = { "python" } },
-  { command = "revive", filetypes = { "go" } },
+  { command = "revive",     filetypes = { "go" } },
   {
     -- each linter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
     command = "shellcheck",
@@ -296,11 +300,44 @@ dap.configurations.dart = {
   }
 }
 
+
+-- Setup dap for go
+require('dap-go').setup {
+  -- Additional dap configurations can be added.
+  -- dap_configurations accepts a list of tables where each entry
+  -- represents a dap configuration. For more details do:
+  -- :help dap-configuration
+  dap_configurations = {
+    {
+      -- Must be "go" or it will be ignored by the plugin
+      type = "go",
+      name = "Attach remote",
+      mode = "remote",
+      request = "attach",
+    },
+  },
+  -- delve configurations
+  delve = {
+    -- time to wait for delve to initialize the debug session.
+    -- default to 20 seconds
+    initialize_timeout_sec = 20,
+    -- a string that defines the port to start delve debugger.
+    -- default to string "${port}" which instructs nvim-dap
+    -- to start the process in a random available port
+    port = "${port}"
+  },
+}
+
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
 vim.api.nvim_create_autocmd("BufEnter", {
   pattern = { "*.json", "*.jsonc" },
   -- enable wrap mode for json files only
   command = "setlocal wrap",
+})
+vim.api.nvim_create_autocmd("BufWritePost", {
+  pattern = { "*.dart" },
+  -- enable wrap mode for json files only
+  command = "",
 })
 -- vim.api.nvim_create_autocmd("FileType", {
 --   pattern = "zsh",

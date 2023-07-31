@@ -76,6 +76,17 @@ lvim.builtin.which_key.mappings["S"] = {
   Q = { "<cmd>lua require('persistence').stop()<cr>", "Quit without saving session" },
 }
 
+lvim.builtin.which_key.mappings["a"] = {
+  name = "Arduino",
+  a = { "<cmd>ArduinoAttach<CR>", "Attach board" },
+  v = { "<cmd>ArduinoVerify<CR>", "Verify code" },
+  u = { "<cmd>ArduinoUpload<CR>", "Upload code" },
+  f = { "<cmd>ArduinoUploadAndSerial<CR>", "Upload code and open serial connection" },
+  s = { "<cmd>ArduinoSerial<CR>", "Serial connection" },
+  b = { "<cmd>ArduinoChooseBoard<CR>", "Choose board" },
+  p = { "<cmd>ArduinoChooseProgrammer<CR>", "Choose programmer" },
+}
+
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "dashboard"
@@ -85,6 +96,7 @@ lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
 
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
+  "arduino",
   "bash",
   "c",
   "dart",
@@ -102,7 +114,6 @@ lvim.builtin.treesitter.ignore_install = { "haskell" }
 lvim.builtin.treesitter.highlight.enable = true
 
 -- generic LSP settings
-
 -- make sure server will always be installed even if the server is in skipped_servers list
 lvim.lsp.installer.setup.ensure_installed = {
   "gopls",
@@ -111,12 +122,30 @@ lvim.lsp.installer.setup.ensure_installed = {
   "sumeko_lua",
 }
 
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "gopls" })
+
+-- ARDUINO LSP
+-- NOTE: mind the cli-config path
+local MY_FQBN = "arduino:avr:uno"
+require 'lspconfig'.arduino_language_server.setup {
+  cmd = {
+    "arduino-language-server",
+    "-cli-config", "$HOME/Library/Arduino15/arduino-cli.yaml",
+    "-cli",
+    "arduino-cli",
+    "-clangd",
+    "clangd",
+    "-fqbn",
+    MY_FQBN
+  },
+  filetypes = { "arduino" },
+}
+
+-- DART LSP
 require 'lspconfig'.dartls.setup {}
 
 
 -- GO LSP
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "gopls" })
-
 local lsp_manager = require "lvim.lsp.manager"
 lsp_manager.setup("golangci_lint_ls", {
   on_init = require("lvim.lsp").common_on_init,
@@ -191,20 +220,23 @@ lvim.plugins = {
     "ggandor/lightspeed.nvim",
     event = "BufRead",
   },
-  "tpope/vim-surround",
-  "tpope/vim-repeat",
-  "shaunsingh/nord.nvim",
+  { "tpope/vim-surround" },
+  { "tpope/vim-repeat" },
+  { "shaunsingh/nord.nvim" },
 
-  "AckslD/swenv.nvim",
-  "mfussenegger/nvim-dap-python",
-  "jbyuki/one-small-step-for-vimkind",
+  { "AckslD/swenv.nvim" },
+  { "mfussenegger/nvim-dap-python" },
+  { "jbyuki/one-small-step-for-vimkind" },
+
+  -- arduino
+  { "stevearc/vim-arduino" },
 
   -- flutter
-  "akinsho/flutter-tools.nvim",
+  { "akinsho/flutter-tools.nvim" },
 
   -- go
-  "olexsmir/gopher.nvim",
-  "leoluz/nvim-dap-go",
+  { "olexsmir/gopher.nvim" },
+  { "leoluz/nvim-dap-go" },
 
   {
     -- You can generate docstrings automatically.
@@ -245,7 +277,7 @@ lvim.plugins = {
   {
     "folke/persistence.nvim",
     event = "BufReadPre", -- this will only start session saving when an actual file was opened
-    module = "persistence",
+    lazy = true,
     config = function()
       require("persistence").setup {
         dir = vim.fn.expand(vim.fn.stdpath "config" .. "/session/"),

@@ -4,7 +4,7 @@
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = true
-lvim.colorscheme = "nord"
+lvim.colorscheme = "catppuccin-frappe"
 
 -- keymappings [view all the defaults by pressing <leader>Lk] lvim.leader = "space"
 -- add your own keymapping
@@ -216,6 +216,7 @@ linters.setup {
 
 -- Additional Plugins
 lvim.plugins = {
+  { "folke/zen-mode.nvim" },
   {
     "ggandor/lightspeed.nvim",
     event = "BufRead",
@@ -284,6 +285,13 @@ lvim.plugins = {
         options = { "buffers", "curdir", "tabpages", "winsize" },
       }
     end,
+  },
+  -- looks
+  { "rebelot/kanagawa.nvim" },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000
   },
 }
 

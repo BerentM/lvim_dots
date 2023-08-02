@@ -6,6 +6,10 @@ lvim.log.level = "warn"
 lvim.format_on_save = true
 lvim.colorscheme = "catppuccin-frappe"
 
+-- Show line diagnostics automatically in hover window
+vim.o.updatetime = 500
+vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
+
 -- keymappings [view all the defaults by pressing <leader>Lk] lvim.leader = "space"
 -- add your own keymapping
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"

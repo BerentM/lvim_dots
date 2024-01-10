@@ -15,6 +15,7 @@ vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {f
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
 lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
+lvim.keys.normal_mode["<gv"] = ":vsplit<CR>gd"
 
 -- unmap a default keymapping
 -- vim.keymap.del("n", "<C-Up>")
@@ -58,6 +59,12 @@ lvim.builtin.which_key.mappings["P"] = {
   s = { "<cmd>lua require('swenv.api').get_current_venv()<cr>", "Show Env" },
   i = { ":!isort % --profile=black<cr>", "Sort Imports" },
   n = { "<cmd>lua require('neogen').generate()<cr>", "Generate function docstring" },
+}
+
+lvim.builtin.which_key.mappings["t"] = {
+  name = "db",
+  t = { "<cmd>DBUIToggle<cr>", "Toggle DB UI" },
+  l = { "<cmd>DBUILastQueryInfo<cr>", "Last query info - works in dbui window" },
 }
 
 lvim.builtin.which_key.mappings["n"] = {
@@ -123,10 +130,9 @@ lvim.lsp.installer.setup.ensure_installed = {
   "gopls",
   "jsonls",
   "pyright",
-  "sumeko_lua",
 }
 
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "gopls" })
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "gopls", "dartls" })
 
 -- ARDUINO LSP
 -- NOTE: mind the cli-config path
@@ -146,6 +152,7 @@ require 'lspconfig'.arduino_language_server.setup {
 }
 
 -- DART LSP
+-- it done by flutter-tools
 require 'lspconfig'.dartls.setup {}
 
 
@@ -233,11 +240,60 @@ lvim.plugins = {
   { "mfussenegger/nvim-dap-python" },
   { "jbyuki/one-small-step-for-vimkind" },
 
+  -- database
+  {
+    'kristijanhusak/vim-dadbod-ui',
+    dependencies = {
+      { 'tpope/vim-dadbod',                     lazy = true },
+      { 'kristijanhusak/vim-dadbod-completion', ft = { 'sql', 'mysql', 'plsql' }, lazy = true },
+    },
+    cmd = {
+      'DBUI',
+      'DBUIToggle',
+      'DBUIAddConnection',
+      'DBUIFindBuffer',
+    },
+    init = function()
+      -- Your DBUI configuration
+      vim.g.db_ui_use_nerd_fonts = 1
+    end,
+  },
+
   -- arduino
   { "stevearc/vim-arduino" },
 
   -- flutter
-  { "akinsho/flutter-tools.nvim" },
+  {
+    'akinsho/flutter-tools.nvim',
+    lazy = false,
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'stevearc/dressing.nvim',
+    },
+    config = true,
+  },
+  -- copilot
+  {
+    "zbirenbaum/copilot-cmp",
+    event = "InsertEnter",
+    dependencies = { "zbirenbaum/copilot.lua" },
+    config = function()
+      vim.defer_fn(function()
+        require("copilot").setup({
+          suggestion = { enabled = true },
+          panel = {
+            enabled = true,
+            auto_refresh = true,
+            layout = {
+              position = "right",
+              ratio = 0.3,
+            },
+          },
+        })                             -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+        require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
+      end, 100)
+    end,
+  },
 
   -- go
   { "olexsmir/gopher.nvim" },
@@ -297,6 +353,24 @@ lvim.plugins = {
     name = "catppuccin",
     priority = 1000
   },
+  {
+    "kawre/leetcode.nvim",
+    build = ":TSUpdate html",
+    dependencies = {
+      "nvim-telescope/telescope.nvim",
+      "nvim-lua/plenary.nvim", -- required by telescope
+      "MunifTanjim/nui.nvim",
+
+      -- optional
+      "nvim-treesitter/nvim-treesitter",
+      "rcarriga/nvim-notify",
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = {
+      -- configuration goes here
+      lang = "golang",
+    },
+  }
 }
 
 -- TODO: debugpy installed by default

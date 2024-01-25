@@ -15,7 +15,7 @@ vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {f
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
 lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
-lvim.keys.normal_mode["<gv"] = ":vsplit<CR>gd"
+lvim.keys.normal_mode["gv"] = ":vsplit<CR>gd"
 
 -- unmap a default keymapping
 -- vim.keymap.del("n", "<C-Up>")
@@ -96,6 +96,15 @@ lvim.builtin.which_key.mappings["a"] = {
   s = { "<cmd>ArduinoSerial<CR>", "Serial connection" },
   b = { "<cmd>ArduinoChooseBoard<CR>", "Choose board" },
   p = { "<cmd>ArduinoChooseProgrammer<CR>", "Choose programmer" },
+}
+
+-- those keybindings are redundant, i should use M-k and M-j (alt + k and alt + j)
+-- https://stackoverflow.com/questions/196357/making-iterm-to-translate-meta-key-in-the-same-way-as-in-other-oses
+lvim.builtin.which_key.mappings["k"] = {
+  "<cmd>m .-2<CR>==", "Move line up"
+}
+lvim.builtin.which_key.mappings["j"] = {
+  "<cmd>m .+1<CR>==", "Move line down"
 }
 
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
@@ -280,13 +289,27 @@ lvim.plugins = {
     config = function()
       vim.defer_fn(function()
         require("copilot").setup({
-          suggestion = { enabled = true },
           panel = {
-            enabled = true,
-            auto_refresh = true,
-            layout = {
-              position = "right",
-              ratio = 0.3,
+            auto_refresh = false,
+            keymap = {
+              accept = "<CR>",
+              jump_prev = "[[",
+              jump_next = "]]",
+              refresh = "gr",
+              open = "<M-CR>",
+              layout = {
+                position = "right",
+                ratio = 0.3,
+              },
+            },
+          },
+          suggestion = {
+            auto_trigger = true,
+            keymap = {
+              accept = "<M-l>",
+              prev = "<M-[>",
+              next = "<M-]>",
+              dismiss = "<M-h>",
             },
           },
         })                             -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
